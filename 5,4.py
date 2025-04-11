@@ -3,17 +3,12 @@ import sqlite3
 import tkinter as tk
 from tkinter import messagebox, PhotoImage, ttk
 
-# ---------------------------
-# Работа с базой данных
-# ---------------------------
 conn = sqlite3.connect("carsharing.db")
 cursor = conn.cursor()
 
-# Для разработки удаляем старые таблицы (удаляет все данные!)
 cursor.execute("DROP TABLE IF EXISTS users")
 cursor.execute("DROP TABLE IF EXISTS cars")
 
-# Создаем таблицу пользователей
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,7 +19,6 @@ cursor.execute('''
     )
 ''')
 
-# Создаем таблицу автомобилей
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS cars (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +32,6 @@ cursor.execute('''
 ''')
 conn.commit()
 
-# Список случайных пользователей (логин, имя, фамилия, пароль)
 random_users = [
     ("ivanpetrov", "Иван", "Петров", "pass123"),
     ("mariasmirnova", "Мария", "Смирнова", "qwerty"),
@@ -68,7 +61,7 @@ for user in random_users:
     except sqlite3.IntegrityError:
         pass
 
-# Заполняем таблицу автомобилей информацией (на английском, переведено на русский)
+
 default_cars = [
     (
         "Lada Largus",
@@ -110,15 +103,11 @@ for car in default_cars:
     except sqlite3.IntegrityError:
         pass
 
-# ---------------------------
-# Интерфейс выбора автомобиля
-# ---------------------------
 def open_car_selection():
     car_window = tk.Toplevel(root)
     car_window.title("Выбор автомобиля")
     car_window.geometry('900x500')
     
-    # Кнопка "Выйти" в правом верхнем углу
     exit_button = tk.Button(car_window, text="Выйти", command=car_window.destroy)
     exit_button.pack(anchor="ne", padx=10, pady=10)
     
@@ -129,8 +118,7 @@ def open_car_selection():
     tab_control.add(tab1, text='Эконом')
     tab_control.add(tab2, text='Медиум')
     tab_control.add(tab3, text='Бизнес')
-    
-    # Вкладка "Эконом": выводим список автомобилей из таблицы cars, отфильтрованных по категории "Эконом"
+
     car_frame = tk.Frame(tab1)
     car_frame.pack(pady=20)
     
@@ -143,16 +131,12 @@ def open_car_selection():
                       command=lambda info=info: messagebox.showinfo("Информация об автомобиле", info)).pack(pady=5)
     else:
         tk.Label(car_frame, text="Автомобили категории 'Эконом' отсутствуют.", font=("", 12)).pack(pady=20)
-    
-    # Заглушки для вкладок "Медиум" и "Бизнес"
+
     tk.Label(tab2, text="Скоро появятся автомобили категории 'Медиум'.", font=("", 12)).pack(pady=20)
     tk.Label(tab3, text="Скоро появятся автомобили категории 'Бизнес'.", font=("", 12)).pack(pady=20)
     
     tab_control.pack(expand=1, fill='both')
 
-# ---------------------------
-# Окно регистрации
-# ---------------------------
 def open_registration_window():
     reg_window = tk.Toplevel(root)
     reg_window.title("Регистрация")
@@ -208,9 +192,6 @@ def open_registration_window():
     
     tk.Button(frame, text="Зарегистрироваться", command=register_user, width=25).pack(pady=10)
 
-# ---------------------------
-# Вход пользователя
-# ---------------------------
 def user_login():
     username = entry_username.get().strip()
     password = entry_password.get()
@@ -222,9 +203,6 @@ def user_login():
     else:
         messagebox.showerror("Ошибка", "Неверный логин или пароль.")
 
-# ---------------------------
-# Вход разработчика
-# ---------------------------
 def developer_login():
     username = entry_username.get().strip()
     password = entry_password.get()
@@ -236,9 +214,6 @@ def developer_login():
     else:
         messagebox.showerror("Ошибка", "Неверные учетные данные разработчика!")
 
-# ---------------------------
-# Окно базы данных пользователей для разработчика
-# ---------------------------
 def show_users_db():
     users_window = tk.Toplevel(root)
     users_window.title("База данных пользователей")
@@ -288,12 +263,8 @@ def show_users_db():
     
     tk.Button(deletion_frame, text="Удалить", command=delete_user).pack(side=tk.LEFT, padx=5)
     
-    # Кнопка для управления данными автомобилей
     tk.Button(users_window, text="Управление данными автомобилей", command=manage_cars, width=25).pack(pady=10)
 
-# ---------------------------
-# Функция управления данными автомобилей (добавление и удаление)
-# ---------------------------
 def manage_cars():
     cars_window = tk.Toplevel(root)
     cars_window.title("Управление автомобилями")
@@ -321,7 +292,6 @@ def manage_cars():
     
     refresh_car_tree()
     
-    # Форма добавления нового автомобиля
     add_frame = tk.Frame(cars_window)
     add_frame.pack(pady=10)
     
@@ -369,8 +339,7 @@ def manage_cars():
             messagebox.showerror("Ошибка", f"Ошибка при добавлении автомобиля: {e}")
     
     tk.Button(add_frame, text="Добавить автомобиль", command=add_car, width=20).grid(row=6, column=0, columnspan=2, pady=10)
-    
-    # Функция удаления выбранного автомобиля
+
     def delete_car():
         selected = tree.focus()
         if not selected:
@@ -385,9 +354,6 @@ def manage_cars():
     
     tk.Button(cars_window, text="Удалить выбранный автомобиль", command=delete_car, width=25).pack(pady=10)
 
-# ---------------------------
-# Главное окно приложения
-# ---------------------------
 root = tk.Tk()
 root.title("Каршеринг")
 root.geometry("300x400")
